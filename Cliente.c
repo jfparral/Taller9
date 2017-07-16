@@ -9,7 +9,7 @@
 
 #define BUFFSIZE 1
 #define	ERROR	-1
-#define	PUERTO	1100
+//#define	PUERTO	4555
 
 int main(int argc, char *argv[]){
 	struct sockaddr_in stSockAddr;
@@ -21,16 +21,21 @@ int main(int argc, char *argv[]){
 	char mensaje[80];
 	int totalBytesRcvd;
 	int bytesRcvd;
+	int puerto;
 	FILE *archivo;
-	
-	if(argc < 3){
-		perror("USO:./clientFiles <archivo a enviar> <direccionIP del servidor>");
-		exit(EXIT_FAILURE);
+
+	if(argc == 1){
+		printf("Uso: ./cliente <ip> <puerto> <directorio a leer> <nombre del archivo>\n");
+		exit(-1);
+	}
+
+	if(argc != 5){
+		printf( "por favor especificar un numero de puerto\n");
 	}
 
 
 	/*Se abre el archivo a enviar*/
-	archivo = fopen(argv[1],"rb");
+	archivo = fopen(argv[3],"rb");
 
 	/*Se crea el socket*/
 	SocketFD = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -49,10 +54,10 @@ int main(int argc, char *argv[]){
 
 	/*Se configura la dirección del socket del cliente*/
 	memset(&stSockAddr, 0, sizeof stSockAddr);
- 
+	puerto = atoi(argv[2]);
 	stSockAddr.sin_family = AF_INET;
-	stSockAddr.sin_port = htons(1100);
-	Res = inet_pton(AF_INET, argv[2], &stSockAddr.sin_addr);
+	stSockAddr.sin_port = htons(puerto);
+	Res = inet_pton(AF_INET, argv[1], &stSockAddr.sin_addr);
  
 	sockLen = sizeof(stSockAddr);
 
