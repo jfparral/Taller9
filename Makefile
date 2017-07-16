@@ -7,4 +7,4 @@ Cliente: Cliente.c
 	gcc -Wall $^ -o $@
 
 clean:
-	rm -rf cliente servidor
+	rm -rf Cliente Servidor verificacion archivoRecibido 

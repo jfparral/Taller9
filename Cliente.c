@@ -13,14 +13,10 @@
 
 int main(int argc, char *argv[]){
 	struct sockaddr_in stSockAddr;
-	int sockLen;
 	int Res;
 	int SocketFD;
-	int recibido;
 	char buffer[BUFFSIZE];
 	char mensaje[80];
-	int totalBytesRcvd;
-	int bytesRcvd;
 	int puerto;
 	FILE *archivo;
 
@@ -58,15 +54,13 @@ int main(int argc, char *argv[]){
 	stSockAddr.sin_family = AF_INET;
 	stSockAddr.sin_port = htons(puerto);
 	Res = inet_pton(AF_INET, argv[1], &stSockAddr.sin_addr);
- 
-	sockLen = sizeof(stSockAddr);
 
 	if (0 > Res){
-		perror("error: El primer paránmetro no es una familia de direcciónes");
+		perror("error: El primer parametro no es una familia de direcciónes");
 		close(SocketFD);
 		exit(EXIT_FAILURE);
 	}else if (Res == 0){
-		perror("char string (El segundo parmetro no contiene una dirección IP válida");
+		perror("char string (El segundo parametro no contiene una dirección IP válida");
 		close(SocketFD);
 		exit(EXIT_FAILURE);
 	}

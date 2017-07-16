@@ -83,7 +83,7 @@ int main(int argc, char *argv[]){
 						    (struct sockaddr *) &clSockAddr,(socklen_t *)
 						    &clientLen);
 		if (SocketClientFD < 0){
-			perror("Fallo para acpetar la conexión del cliente");
+			perror("Fallo para aceptar la conexión del cliente");
 		}//End if-accept
 
 		/*Se configura la dirección del cliente*/
@@ -111,7 +111,7 @@ void recibirArchivo(int SocketFD, FILE *file){
 	enviarConfirmacion(SocketFD);
 	enviarMD5SUM(SocketFD);
 	while((recibido = recv(SocketFD, buffer, BUFFSIZE, 0)) > 0){
-		printf("%s",buffer);
+		//printf("%s",buffer);
 		fwrite(buffer,sizeof(char),1,file);
 	}//Termina la recepción del archivo
 
