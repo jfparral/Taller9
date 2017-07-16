@@ -9,38 +9,39 @@
 
 /*Definición de constantes*/
 #define BUFFSIZE 1
-#define PUERTO		1100
 #define ERROR		-1
+
+#ifndef HOST_NAME_MAX 
+#define HOST_NAME_MAX 256 
+#endif
 
 /*Prototipos de función*/
 void recibirArchivo(int SocketFD, FILE *file);
 void enviarConfirmacion(int SocketFD);
 void enviarMD5SUM(int SocketFD);
-void getIP(int tipo, char * IP);
-/*Recibe la clave de la interfaz que va a manejar:
- * lo : 0
- * wlan: 1
- * eth0: 2
-*/
+
+
 int main(int argc, char *argv[]){
 	struct sockaddr_in stSockAddr;
     	struct sockaddr_in clSockAddr;
 	FILE *archivo;
-	char *direccIP;
+	char *host;
 	int SocketServerFD;
 	int SocketClientFD;
 	int clientLen;
 	int serverLen;
-	direccIP = malloc(20);
+	int puerto;
+	
 
 	/*Verifica que el número de parametros sea el correcto*/
-	if(argc < 2){
-		perror("Uso ./ServerFiles <clave de interfaz 0:lo 1:wlan 2:eth0>");
-		exit(EXIT_FAILURE);	
+	if(argc == 1){
+		printf("Uso: ./servidor <ip> <puerto>\n");
+		exit(-1);
 	}
 
-	/*Se obtiene la IP de la interfaz solicitada*/
-	getIP(atoi(argv[1]),direccIP);
+	if(argc != 3){
+		printf( "por favor especificar un numero de puerto\n");
+	}
 
 	/*Se crea el socket*/
 	if((SocketServerFD = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) == ERROR){
@@ -50,9 +51,9 @@ int main(int argc, char *argv[]){
  
 	/*Se configura la dirección del socket*/
 	memset(&stSockAddr, 0, sizeof stSockAddr);
-	 
+	puerto = atoi(argv[2]);
 	stSockAddr.sin_family = AF_INET;
-	stSockAddr.sin_port = htons(PUERTO);
+	stSockAddr.sin_port = htons(puerto);
 	stSockAddr.sin_addr.s_addr = INADDR_ANY;
  
 	if(bind(SocketServerFD,(struct sockaddr *)&stSockAddr, sizeof stSockAddr) == ERROR){
@@ -60,8 +61,15 @@ int main(int argc, char *argv[]){
 		close(SocketServerFD);
 		exit(EXIT_FAILURE);
 	}//End if-bind
-	inet_pton(AF_INET, direccIP, &stSockAddr.sin_addr);
-	printf("Socket atado a la dirección %s\n",(char *)inet_ntoa(stSockAddr.sin_addr));	
+	inet_pton(AF_INET, argv[1], &stSockAddr.sin_addr);
+	printf("Socket atado a la dirección %s\n",(char *)inet_ntoa(stSockAddr.sin_addr));
+	
+	//darle el nombre del puerto que esta escuchando
+	if ((host = malloc(HOST_NAME_MAX)) == NULL) 
+		printf(" malloc error"); 
+	gethostname( host, HOST_NAME_MAX);	
+	printf("Nombre del host: %s\n",host);
+
 	if(listen(SocketServerFD, 10) == ERROR){
 		perror("Error listen");
 		close(SocketServerFD);
@@ -80,7 +88,7 @@ int main(int argc, char *argv[]){
 
 		/*Se configura la dirección del cliente*/
 		clSockAddr.sin_family = AF_INET;
-		clSockAddr.sin_port = htons(PUERTO);
+		clSockAddr.sin_port = htons(puerto);
 		printf("Cliente conectado: %s\n",inet_ntoa(clSockAddr.sin_addr));
 
 		/*Se recibe el archivo del cliente*/
@@ -135,30 +143,3 @@ void enviarMD5SUM(int SocketFD){
 	fclose(tmp);
 
 }//End enviarMD5DUM
-
-void getIP(int tipo, char * IP){
-	FILE *tmpIP;
-	char dIP[20];
-	char dIP2[20];
-	int i,j;
-	switch(tipo){
-		case 0:
-			system("ifconfig lo | grep inet > tmp");
-			break;
-		case 1:
-			system("ifconfig wlan | grep inet > tmp");
-			break;
-		case 2:
-			system("ifconfig eth | grep inet > tmp");
-			break;
-
-	
-	}//End switch
-	j = 0;
-	tmpIP = fopen("tmp","r");
-	fscanf(tmpIP,"%s %s",dIP,dIP);
-	for(i = 5;i<20;i++){
-		IP[j] = dIP[i];	
-		j++;		
-	}
-}//End getIP
