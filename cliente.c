@@ -68,6 +68,16 @@ int main( int argc, char *argv[]) {
 		printf( "por favor especificar un numero de puerto\n");
 	}
 
+	if(argvc != 5)
+	{
+		printf("por favor ingresar la ruta del archivo a buscar\n");
+	}
+
+	if(argvc != 7)
+	{
+		printf("por favor ingresar el nombre del archivo a guardar\n");
+	}
+
 	int puerto = atoi(argv[2]);
 
 
