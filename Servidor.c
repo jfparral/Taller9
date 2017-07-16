@@ -23,13 +23,12 @@ void enviarMD5SUM(int SocketFD);
 
 int main(int argc, char *argv[]){
 	struct sockaddr_in stSockAddr;
-    	struct sockaddr_in clSockAddr;
+    struct sockaddr_in clSockAddr;
 	FILE *archivo;
 	char *host;
 	int SocketServerFD;
 	int SocketClientFD;
 	int clientLen;
-	int serverLen;
 	int puerto;
 	
 
@@ -80,9 +79,10 @@ int main(int argc, char *argv[]){
 		clientLen = sizeof(clSockAddr);
 
 		//Espera por la conexión de un cliente//
-		if ((SocketClientFD = accept(SocketServerFD, 
-						    (struct sockaddr *) &clSockAddr,
-						    &clientLen)) < 0){
+		SocketClientFD = accept(SocketServerFD, 
+						    (struct sockaddr *) &clSockAddr,(socklen_t *)
+						    &clientLen);
+		if (SocketClientFD < 0){
 			perror("Fallo para acpetar la conexión del cliente");
 		}//End if-accept
 
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]){
 		printf("Cliente conectado: %s\n",inet_ntoa(clSockAddr.sin_addr));
 
 		/*Se recibe el archivo del cliente*/
-		recibirArchivo(SocketClientFD, archivo);
+		recibirArchivo(SocketClientFD,archivo);
 		
 
 	}//End infinity while
@@ -122,7 +122,6 @@ void recibirArchivo(int SocketFD, FILE *file){
 
 void enviarConfirmacion(int SocketFD){
 	char mensaje[80] = "Paquete Recibido";
-	int lenMensaje = strlen(mensaje);
 	printf("\nConfirmación enviada\n");
 	if(write(SocketFD,mensaje,sizeof(mensaje)) == ERROR)
 			perror("Error al enviar la confirmación:");
