@@ -84,7 +84,6 @@ int main(int argc, char *argv[]){
 	printf("\nConfirmación recibida:\n%s\n",mensaje);
 	
 	read(SocketFD,mensaje,sizeof(mensaje));
-	printf("\nMD5SUM:\n%s\n",mensaje);
 	
 	fclose(archivo);
 	close(SocketFD);
