@@ -137,6 +137,7 @@ void enviarMD5SUM(int SocketFD){
 	
 	tmp = fopen(fileName,"r");
 	fscanf(tmp,"%s",md5sum);	
+	//printf("\nMD5SUM:%s\n",md5sum);	
 	write(SocketFD,md5sum,sizeof(md5sum));
 	fclose(tmp);
 
